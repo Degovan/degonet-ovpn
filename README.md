@@ -8,15 +8,11 @@ make-cadir certs
 
 - Generate certificate authority
 ```bash
+cd certs
 ./easyrsa init-pki
 ./easyrsa gen-dh
 ./easyrsa build-ca nopass
 ./easyrsa build-server-full server nopass
-```
-
-- Run OpenVPN Server
-```bash
-sudo openvpn server.conf
 ```
 
 - Compile authentication file
@@ -25,4 +21,10 @@ cd auth
 cp .env.example .env
 composer install --no-dev
 composer run build
+cd .. && chmod +x auth.phar
+```
+
+- Run OpenVPN Server
+```bash
+sudo openvpn server.conf
 ```
