@@ -13,6 +13,7 @@ cd certs
 ./easyrsa gen-dh
 ./easyrsa build-ca nopass
 ./easyrsa build-server-full server nopass
+cd ..
 ```
 
 - Compile authentication file
