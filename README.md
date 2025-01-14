@@ -18,3 +18,11 @@ make-cadir certs
 ```bash
 sudo openvpn server.conf
 ```
+
+- Compile authentication file
+```bash
+cd auth
+cp .env.example .env
+composer install --no-dev
+composer run build
+```
