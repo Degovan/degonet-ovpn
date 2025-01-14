@@ -1,0 +1,25 @@
+{
+    "name": "degonet-ovpn/auth",
+    "description": "Degonet OpenVPN Authentication",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "DegonetOvpn\\Auth\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "irsyadulibad",
+            "email": "ahmadirsyadulibad7@gmail.com"
+        }
+    ],
+    "scripts": {
+        "build": "@php phar-build.php"
+    },
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^7.2"
+    }
+}
