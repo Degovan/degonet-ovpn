@@ -3,3 +3,4 @@ auth/vendor
 .env
 *.phar
 *.log
+ccds/*
