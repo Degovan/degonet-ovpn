@@ -1,6 +1,7 @@
 <?php
 
 use DegonetOvpn\Auth\Services\AuthService;
+use DegonetOvpn\Auth\Services\CCDService;
 use DegonetOvpn\Auth\Utils\DatabaseUtil;
 use Dotenv\Dotenv;
 
@@ -12,10 +13,12 @@ $dotenv->load();
 DatabaseUtil::initConnection();
 
 $auth = new AuthService;
-$username = $_SERVER['username'] ?? '';
-$password = $_SERVER['password'] ?? '';
+$username = $_SERVER['username'] ?? 'testing';
+$password = $_SERVER['password'] ?? 'testing123';
 
-if ($auth->login($username, $password)) {
+if ($user = $auth->login($username, $password)) {
+    CCDService::create($user);
+
     echo 'Login successful' . PHP_EOL;
     exit(0);
 } else {
