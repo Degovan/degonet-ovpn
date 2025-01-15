@@ -2,3 +2,4 @@ certs/*
 auth/vendor
 .env
 *.phar
+*.log
