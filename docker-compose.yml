@@ -11,6 +11,9 @@ services:
       - "/dev/net/tun:/dev/net/tun"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      degonet_network:
+        ipv4_address: 10.10.0.2
     volumes:
       - type: bind
         source: ./server.conf
@@ -18,3 +21,7 @@ services:
       - type: bind
         source: ./logs
         target: /etc/openvpn/logs
+
+networks:
+  degonet_network:
+    external: true

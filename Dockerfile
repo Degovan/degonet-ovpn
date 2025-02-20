@@ -17,6 +17,7 @@ RUN apt update && apt install -y \
     php-phar \
     php-json \
     php-mbstring \
+    iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -29,7 +30,9 @@ COPY . /etc/openvpn
 RUN composer install -d /etc/openvpn/auth \
     && composer run build -d /etc/openvpn/auth
 
-RUN chmod +x /etc/openvpn/auth.phar
+RUN chmod +x /etc/openvpn/auth.phar && \
+    chmod +x /etc/openvpn/.docker/entrypoint.sh
+
 RUN bash setup-certs.sh
 
-CMD ["openvpn", "--config", "/etc/openvpn/server.conf"]
+CMD ["/etc/openvpn/.docker/entrypoint.sh"]
