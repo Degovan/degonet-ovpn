@@ -12,16 +12,20 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
-      degonet_network:
+      degonet-network:
         ipv4_address: 10.10.0.2
     volumes:
-      - type: bind
-        source: ./server.conf
-        target: /etc/openvpn/server.conf
-      - type: bind
-        source: ./logs
-        target: /etc/openvpn/logs
+      - openvpn_data:/etc/openvpn/ccds
+      - openvpn_db:/etc/openvpn/data
+    environment:
+      DB_FILE: /etc/openvpn/data/users.sqlite
+      CCD_DIR: /etc/openvpn/ccds
+      DEFAULT_NETMASK: 255.255.255.0
+
+volumes:
+  openvpn_data:
+  openvpn_db:
 
 networks:
-  degonet_network:
+  degonet-network:
     external: true

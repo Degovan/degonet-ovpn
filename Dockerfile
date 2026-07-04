@@ -1,38 +1,38 @@
-FROM debian:latest
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /build
+
+COPY auth-src/go.mod auth-src/go.sum* ./
+RUN go mod download
+
+COPY auth-src/ ./
+RUN go mod tidy && CGO_ENABLED=0 go build -ldflags="-s -w" -o auth .
+
+FROM alpine:latest
+
+RUN apk add --no-cache \
+    openvpn \
+    iptables \
+    bash \
+    iputils \
+    curl \
+    openssl
 
 WORKDIR /etc/openvpn
 
-# Install Packages
-RUN apt update && apt install -y \
-    openvpn \
-    iptables \
-    curl \
-    git \
-    php-cli \
-    php-fpm \
-    php-curl \
-    php-mysql \
-    php-xml \
-    php-zip \
-    php-phar \
-    php-json \
-    php-mbstring \
-    iputils-ping \
-    && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /build/auth /etc/openvpn/auth
+COPY .docker/entrypoint.sh /etc/openvpn/
+COPY server.conf /etc/openvpn/
+COPY setup-certs.sh /etc/openvpn/
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN sed -i 's/;phar.readonly = On/phar.readonly = Off/' /etc/php/8.2/cli/php.ini
+ENV DB_FILE=/etc/openvpn/data/users.sqlite
+ENV DEFAULT_NETMASK=255.255.255.0
+ENV CCD_DIR=/etc/openvpn/ccds
 
-RUN mkdir -p /etc/openvpn
-COPY . /etc/openvpn
+RUN chmod +x /etc/openvpn/auth \
+    && chmod +x /etc/openvpn/entrypoint.sh \
+    && mkdir -p /etc/openvpn/ccds /etc/openvpn/data
 
-RUN composer install -d /etc/openvpn/auth \
-    && composer run build -d /etc/openvpn/auth
+RUN bash /etc/openvpn/setup-certs.sh
 
-RUN chmod +x /etc/openvpn/auth.phar && \
-    chmod +x /etc/openvpn/.docker/entrypoint.sh
-
-RUN bash setup-certs.sh
-
-CMD ["/etc/openvpn/.docker/entrypoint.sh"]
+CMD ["/etc/openvpn/entrypoint.sh"]
