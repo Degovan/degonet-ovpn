@@ -40,6 +40,54 @@ Notes for the `add` command:
 - If password is not provided, it defaults to the username.
 - Successful output is shown in table format and the password value is masked as `****`.
 
+## HTTP API
+
+Start API server:
+
+```bash
+API_KEY=your-secret-key ./auth serve
+API_KEY=your-secret-key ./auth serve --port 9090
+```
+
+All endpoints (except `/api/auth`) require `X-API-Key` header.
+
+### Endpoints
+
+**POST /api/auth** — Authenticate user (public)
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"username":"budi","password":"rahasia"}' \
+  http://localhost:8080/api/auth
+```
+
+**GET /api/users** — List all users
+
+```bash
+curl -H "X-API-Key: your-secret-key" http://localhost:8080/api/users
+```
+
+**POST /api/users** — Add user
+
+```bash
+curl -X POST -H "X-API-Key: your-secret-key" -H "Content-Type: application/json" \
+  -d '{"username":"budi","password":"rahasia","ip":"10.8.0.10","netmask":"255.255.255.0"}' \
+  http://localhost:8080/api/users
+```
+
+**DELETE /api/users/{username}** — Delete user
+
+```bash
+curl -X DELETE -H "X-API-Key: your-secret-key" http://localhost:8080/api/users/budi
+```
+
+### Response Format
+
+```json
+{"success": true, "user": {"username": "budi", "ip": "10.8.0.10", "netmask": "255.255.255.0"}}
+{"success": false, "error": "username already exists"}
+```
+
 ## Run
 
 Locally:
@@ -71,3 +119,5 @@ Environment variables (set via `.env` in `auth-src/` or Docker environment):
 | `DB_FILE` | `/etc/openvpn/data/users.sqlite` | SQLite database path |
 | `CCD_DIR` | `/etc/openvpn/ccds` | Client config directory |
 | `DEFAULT_NETMASK` | `255.255.255.0` | Default netmask for new users |
+| `API_KEY` | (required for serve) | API key for HTTP API authentication |
+| `API_PORT` | `8080` | HTTP API server port |

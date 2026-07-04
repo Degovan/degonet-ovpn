@@ -28,6 +28,9 @@ COPY setup-certs.sh /etc/openvpn/
 ENV DB_FILE=/etc/openvpn/data/users.sqlite
 ENV DEFAULT_NETMASK=255.255.255.0
 ENV CCD_DIR=/etc/openvpn/ccds
+ENV API_PORT=80
+
+EXPOSE 1194 80
 
 RUN chmod +x /etc/openvpn/auth \
     && chmod +x /etc/openvpn/entrypoint.sh \

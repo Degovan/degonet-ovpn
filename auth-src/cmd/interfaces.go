@@ -1,6 +1,7 @@
 package cmd
 
 type AuthOperations interface {
+	Login(username, password string) (*User, bool, error)
 	AddUser(username, password, ip, netmask string) (*User, error)
 	FindByUsername(username string) (*User, error)
 	FindByIP(ip string) (*User, error)
