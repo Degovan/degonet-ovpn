@@ -2,53 +2,72 @@
 
 ## Setup
 
-- Setup certificate folder
-
-```bash
-mkdir certs
-```
-
-- Generate certificate authority
+Generate certificate authority:
 
 ```bash
 bash setup-certs.sh
 ```
 
-- Compile authentication file
+Build authentication binary:
 
 ```bash
-cd auth
-cp .env.example .env
-composer install --no-dev
-composer run build
+cd auth-src
+CGO_ENABLED=0 go build -ldflags="-s -w" -o auth .
 cd ..
 ```
 
-- Manage users via CLI (run from the project root after build)
+## CLI Usage
+
+Manage users via the auth binary:
 
 ```bash
-./auth.phar add <username> <ip> [password] [netmask]
-./auth.phar list
-./auth.phar delete <username>
+./auth add <username> <ip> [password] [netmask]
+./auth list
+./auth delete <username>
 ```
 
 Example:
 
 ```bash
-./auth.phar add budi 10.8.0.10 rahasia 255.255.255.0
-./auth.phar list
-./auth.phar delete budi
+./auth add budi 10.8.0.10 rahasia 255.255.255.0
+./auth list
+./auth delete budi
 ```
 
 Notes for the `add` command:
 
-- Username must be unique in the database.
-- IP address must be unique in the database.
+- Username and IP must be unique in the database.
 - If password is not provided, it defaults to the username.
 - Successful output is shown in table format and the password value is masked as `****`.
 
-- Run OpenVPN Server
+## Run
+
+Locally:
 
 ```bash
 sudo openvpn server.conf
 ```
+
+Docker:
+
+```bash
+docker compose up -d --build
+```
+
+Manage users inside container:
+
+```bash
+docker exec degonet-openvpn /etc/openvpn/auth add <username> <ip> [password] [netmask]
+docker exec degonet-openvpn /etc/openvpn/auth list
+docker exec degonet-openvpn /etc/openvpn/auth delete <username>
+```
+
+## Configuration
+
+Environment variables (set via `.env` in `auth-src/` or Docker environment):
+
+| Variable | Default | Description |
+|---|---|---|
+| `DB_FILE` | `/etc/openvpn/data/users.sqlite` | SQLite database path |
+| `CCD_DIR` | `/etc/openvpn/ccds` | Client config directory |
+| `DEFAULT_NETMASK` | `255.255.255.0` | Default netmask for new users |
