@@ -129,33 +129,37 @@ func getEnv(key, fallback string) string {
 }
 
 func loadEnv() error {
-	envPath := ".env"
+	paths := []string{".env"}
+
 	if execPath, err := os.Executable(); err == nil {
-		envPath = filepath.Join(filepath.Dir(execPath), ".env")
+		paths = append(paths, filepath.Join(filepath.Dir(execPath), ".env"))
 	}
-	if _, err := os.Stat(envPath); os.IsNotExist(err) {
-		envPath = ".env"
+	if cwd, err := os.Getwd(); err == nil {
+		paths = append(paths, filepath.Join(cwd, ".env"))
 	}
 
-	data, err := os.ReadFile(envPath)
-	if err != nil {
+	for _, envPath := range paths {
+		data, err := os.ReadFile(envPath)
+		if err != nil {
+			continue
+		}
+
+		for _, line := range strings.Split(string(data), "\n") {
+			line = strings.TrimSpace(line)
+			if line == "" || strings.HasPrefix(line, "#") {
+				continue
+			}
+			parts := strings.SplitN(line, "=", 2)
+			if len(parts) != 2 {
+				continue
+			}
+			key := strings.TrimSpace(parts[0])
+			val := strings.TrimSpace(parts[1])
+			if os.Getenv(key) == "" && val != "" {
+				os.Setenv(key, val)
+			}
+		}
 		return nil
-	}
-
-	for _, line := range strings.Split(string(data), "\n") {
-		line = strings.TrimSpace(line)
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) != 2 {
-			continue
-		}
-		key := strings.TrimSpace(parts[0])
-		val := strings.TrimSpace(parts[1])
-		if os.Getenv(key) == "" {
-			os.Setenv(key, val)
-		}
 	}
 	return nil
 }
