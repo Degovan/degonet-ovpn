@@ -5,9 +5,9 @@ CERTS_DIR="./certs"
 
 mkdir -p "$CERTS_DIR"
 
-curl -Lo easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/v3.2.2/EasyRSA-3.2.2.tgz
+curl -Lo easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/v3.2.6/EasyRSA-3.2.6.tgz
 tar xzf easy-rsa.tgz
-mv EasyRSA-3.2.2 certs/easy-rsa
+mv EasyRSA-3.2.6 certs/easy-rsa
 rm easy-rsa.tgz
 
 cd certs/easy-rsa

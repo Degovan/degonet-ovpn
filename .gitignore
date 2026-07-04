@@ -1,6 +1,7 @@
 certs/*
 auth/vendor
 .env
-*.phar
 *.log
 ccds/*
+users.sqlite
+*.service

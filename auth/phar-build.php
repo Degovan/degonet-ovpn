@@ -9,5 +9,6 @@ $phar->setStub(file_get_contents('phar.php'));
 
 echo "Phar compiled successfully\n";
 
+chmod('auth.phar', 0755);
 rename('auth.phar', '../auth.phar');
 echo "Phar moved to parent directory\n";

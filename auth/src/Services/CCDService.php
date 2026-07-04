@@ -16,4 +16,16 @@ class CCDService
 
         return true;
     }
+
+    public static function delete(string $username): bool
+    {
+        $dir = $_ENV['CCD_DIR'];
+        $filePath = "{$dir}/{$username}";
+
+        if (!file_exists($filePath)) {
+            return false;
+        }
+
+        return unlink($filePath);
+    }
 }
