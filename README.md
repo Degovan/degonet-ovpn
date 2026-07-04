@@ -58,13 +58,13 @@ All endpoints (except `/api/auth`) require `X-API-Key` header.
 ```bash
 curl -X POST -H "Content-Type: application/json" \
   -d '{"username":"budi","password":"rahasia"}' \
-  http://localhost:8080/api/auth
+  http://localhost/api/auth
 ```
 
 **GET /api/users** — List all users
 
 ```bash
-curl -H "X-API-Key: your-secret-key" http://localhost:8080/api/users
+curl -H "X-API-Key: your-secret-key" http://localhost/api/users
 ```
 
 **POST /api/users** — Add user
@@ -72,13 +72,13 @@ curl -H "X-API-Key: your-secret-key" http://localhost:8080/api/users
 ```bash
 curl -X POST -H "X-API-Key: your-secret-key" -H "Content-Type: application/json" \
   -d '{"username":"budi","password":"rahasia","ip":"10.8.0.10","netmask":"255.255.255.0"}' \
-  http://localhost:8080/api/users
+  http://localhost/api/users
 ```
 
 **DELETE /api/users/{username}** — Delete user
 
 ```bash
-curl -X DELETE -H "X-API-Key: your-secret-key" http://localhost:8080/api/users/budi
+curl -X DELETE -H "X-API-Key: your-secret-key" http://localhost/api/users/budi
 ```
 
 ### Response Format
@@ -120,4 +120,4 @@ Environment variables (set via `.env` in `auth-src/` or Docker environment):
 | `CCD_DIR` | `/etc/openvpn/ccds` | Client config directory |
 | `DEFAULT_NETMASK` | `255.255.255.0` | Default netmask for new users |
 | `API_KEY` | (required for serve) | API key for HTTP API authentication |
-| `API_PORT` | `8080` | HTTP API server port |
+| `API_PORT` | `80` | HTTP API server port |
