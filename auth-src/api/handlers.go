@@ -13,6 +13,13 @@ type Handler struct {
 	CCD  cmd.CCDOperations
 }
 
+func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]any{
+		"success": true,
+		"status":  "ok",
+	})
+}
+
 func (h *Handler) AuthUser(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Username string `json:"username"`

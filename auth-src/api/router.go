@@ -16,6 +16,7 @@ func NewRouter(apiKey string, handler *Handler) *chi.Mux {
 	r.Group(func(r chi.Router) {
 		r.Use(APIKeyAuth(apiKey))
 
+		r.Get("/api/health", handler.Health)
 		r.Get("/api/users", handler.ListUsers)
 		r.Post("/api/users", handler.AddUser)
 		r.Delete("/api/users/{username}", handler.DeleteUser)

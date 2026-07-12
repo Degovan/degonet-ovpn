@@ -100,6 +100,7 @@ func runServe(auth *AuthService, ccd *CCDService, args []string) {
 	fmt.Printf("  Listening on %s\n", addr)
 	fmt.Println("  Endpoints:")
 	fmt.Println("    POST   /api/auth            (public)")
+	fmt.Println("    GET    /api/health           (X-API-Key)")
 	fmt.Println("    GET    /api/users            (X-API-Key)")
 	fmt.Println("    POST   /api/users            (X-API-Key)")
 	fmt.Println("    DELETE /api/users/{username}  (X-API-Key)")
