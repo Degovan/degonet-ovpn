@@ -117,7 +117,8 @@ func showUsage() {
 	output.Error("Command tidak dikenal. Gunakan salah satu: add, delete, list, serve")
 	fmt.Println("Contoh:")
 	fmt.Println("  auth add <username> <ip> [password] [netmask]")
-	fmt.Println("  auth delete <username>")
+	fmt.Println("  auth delete <username> [username...] [-y]")
+	fmt.Println("  auth delete                 (pilih banyak user secara interaktif)")
 	fmt.Println("  auth list")
 	fmt.Println("  auth serve [--port <port>]")
 }

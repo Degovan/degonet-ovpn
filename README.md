@@ -102,13 +102,27 @@ Docker:
 docker compose up -d --build
 ```
 
+Or use the interactive manager, which sets the API secret in `.env`, creates the `degonet-network` network if missing, and wraps the common compose/user actions:
+
+```bash
+./manage.sh            # interactive menu
+./manage.sh secret     # generate or enter API_KEY, then recreate the container
+./manage.sh rebuild    # rebuild image and start
+./manage.sh help       # all actions (status, up, restart, logs, health, users, user:add, user:delete, ...)
+```
+
+`API_KEY` is read from `.env` in the project root (next to `docker-compose.yml`); without it the container falls back to `changeme`. After changing it the container must be recreated (`./manage.sh up`), a plain restart keeps the old value.
+
 Manage users inside container:
 
 ```bash
 docker exec degonet-openvpn /etc/openvpn/auth add <username> <ip> [password] [netmask]
 docker exec degonet-openvpn /etc/openvpn/auth list
-docker exec degonet-openvpn /etc/openvpn/auth delete <username>
+docker exec degonet-openvpn /etc/openvpn/auth delete <username> [username...] [-y]
+docker exec -it degonet-openvpn /etc/openvpn/auth delete
 ```
+
+Running `auth delete` without a username opens an interactive checklist: type to search (username or IP), `space`/`tab` to select, `ctrl+a` to select all visible, `enter` to continue, `esc` to cancel. Deleting multiple users asks for confirmation; pass `-y` to skip it.
 
 ## Configuration
 
