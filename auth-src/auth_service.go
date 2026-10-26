@@ -113,3 +113,33 @@ func (a *AuthService) DeleteUser(username string) (bool, error) {
 	n, _ := res.RowsAffected()
 	return n > 0, nil
 }
+
+// UpdateUser mengubah field yang tidak kosong; field kosong dibiarkan apa adanya.
+func (a *AuthService) UpdateUser(username, password, ip, netmask string) (*cmd.User, error) {
+	user, err := a.FindByUsername(username)
+	if err != nil || user == nil {
+		return nil, err
+	}
+
+	if password != "" {
+		hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
+		user.Password = string(hashed)
+	}
+	if ip != "" {
+		user.IP = ip
+	}
+	if netmask != "" {
+		user.Netmask = netmask
+	}
+
+	if _, err := db.Exec(
+		"UPDATE mikrotik_users SET password = ?, ip = ?, netmask = ? WHERE username = ?",
+		user.Password, user.IP, user.Netmask, username,
+	); err != nil {
+		return nil, err
+	}
+	return user, nil
+}

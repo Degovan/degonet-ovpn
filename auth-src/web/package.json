@@ -1,0 +1,17 @@
+{
+  "name": "degonet-ovpn-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && touch dist/.gitkeep",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "preact": "^11.0.2"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "vite": "^8.3.5"
+  }
+}

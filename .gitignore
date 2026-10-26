@@ -5,3 +5,6 @@ ccds/*
 users.sqlite
 *.service
 auth-src/auth
+auth-src/web/node_modules
+auth-src/web/dist/*
+!auth-src/web/dist/.gitkeep

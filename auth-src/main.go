@@ -92,18 +92,32 @@ func runServe(auth *AuthService, ccd *CCDService, args []string) {
 		os.Exit(1)
 	}
 
-	handler := &api.Handler{Auth: auth, CCD: ccd}
-	router := api.NewRouter(apiKey, handler)
+	handler := &api.Handler{
+		Auth:           auth,
+		CCD:            ccd,
+		Mgmt:           &api.Management{Addr: getEnv("MGMT_ADDR", "localhost:7505")},
+		APIKey:         apiKey,
+		VPNSubnet:      getEnv("VPN_SUBNET", "11.11.0.0/24"),
+		DefaultNetmask: getEnv("DEFAULT_NETMASK", "255.255.255.0"),
+	}
+	router := api.NewRouter(apiKey, handler, webFS())
 
 	addr := ":" + port
 	output.Header("OpenVPN HTTP API")
 	fmt.Printf("  Listening on %s\n", addr)
+	fmt.Println("  Web UI: http://localhost" + addr + "/")
 	fmt.Println("  Endpoints:")
-	fmt.Println("    POST   /api/auth            (public)")
-	fmt.Println("    GET    /api/health           (X-API-Key)")
-	fmt.Println("    GET    /api/users            (X-API-Key)")
-	fmt.Println("    POST   /api/users            (X-API-Key)")
-	fmt.Println("    DELETE /api/users/{username}  (X-API-Key)")
+	fmt.Println("    POST   /api/auth                   (public)")
+	fmt.Println("    POST   /api/login                  (public)")
+	fmt.Println("    POST   /api/logout                 (public)")
+	fmt.Println("    GET    /api/health                 (X-API-Key)")
+	fmt.Println("    GET    /api/config                 (X-API-Key)")
+	fmt.Println("    GET    /api/status                 (X-API-Key)")
+	fmt.Println("    GET    /api/users                  (X-API-Key)")
+	fmt.Println("    POST   /api/users                  (X-API-Key)")
+	fmt.Println("    PUT    /api/users/{username}       (X-API-Key)")
+	fmt.Println("    DELETE /api/users/{username}       (X-API-Key)")
+	fmt.Println("    POST   /api/users/{username}/kick  (X-API-Key)")
 	output.Success("Server started.")
 
 	if err := http.ListenAndServe(addr, router); err != nil {

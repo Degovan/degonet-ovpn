@@ -8,13 +8,17 @@ Generate certificate authority:
 bash setup-certs.sh
 ```
 
-Build authentication binary:
+Build authentication binary (the web UI is embedded, so build it first):
 
 ```bash
-cd auth-src
+cd auth-src/web
+npm ci && npm run build
+cd ..
 CGO_ENABLED=0 go build -ldflags="-s -w" -o auth .
 cd ..
 ```
+
+Skipping the web build still compiles; `/` then just says the UI is not built.
 
 ## CLI Usage
 
@@ -40,6 +44,23 @@ Notes for the `add` command:
 - If password is not provided, it defaults to the username.
 - Successful output is shown in table format and the password value is masked as `****`.
 
+## Web UI
+
+`auth serve` also serves a web dashboard at `/` (with Docker: `http://<server>:8080/`, port set by `API_HOST_PORT`). Log in with `API_KEY`; the browser gets a 12-hour `HttpOnly` session cookie.
+
+- List, search and filter users by online/offline status
+- Add (next free IP in `VPN_SUBNET` is suggested), edit IP/netmask/password, delete and bulk delete
+- Live status from the OpenVPN management interface: public IP, connected time, traffic, and kick
+
+The frontend is Preact + Vite in `auth-src/web`. For development, run `./auth serve` (port 8080) and then:
+
+```bash
+cd auth-src/web
+npm run dev
+```
+
+Vite proxies `/api` to `http://localhost:8080` (override with `API_TARGET`).
+
 ## HTTP API
 
 Start API server:
@@ -49,7 +70,7 @@ API_KEY=your-secret-key ./auth serve
 API_KEY=your-secret-key ./auth serve --port 9090
 ```
 
-All endpoints (except `/api/auth`) require `X-API-Key` header.
+All endpoints except `/api/auth`, `/api/login` and `/api/logout` require the `X-API-Key` header (or a web UI session cookie).
 
 ### Endpoints
 
@@ -80,6 +101,28 @@ curl -X POST -H "X-API-Key: your-secret-key" -H "Content-Type: application/json"
 ```bash
 curl -X DELETE -H "X-API-Key: your-secret-key" http://localhost/api/users/budi
 ```
+
+**PUT /api/users/{username}** — Update password, IP and/or netmask (omitted fields stay unchanged)
+
+```bash
+curl -X PUT -H "X-API-Key: your-secret-key" -H "Content-Type: application/json" \
+  -d '{"ip":"10.8.0.11","password":"baru"}' \
+  http://localhost/api/users/budi
+```
+
+**GET /api/status** — Connected clients from the OpenVPN management interface
+
+```bash
+curl -H "X-API-Key: your-secret-key" http://localhost/api/status
+```
+
+**POST /api/users/{username}/kick** — Disconnect a connected client
+
+```bash
+curl -X POST -H "X-API-Key: your-secret-key" http://localhost/api/users/budi/kick
+```
+
+**GET /api/config** — VPN subnet and default netmask (used by the web UI)
 
 ### Response Format
 
@@ -135,3 +178,6 @@ Environment variables (set via `.env` in `auth-src/` or Docker environment):
 | `DEFAULT_NETMASK` | `255.255.255.0` | Default netmask for new users |
 | `API_KEY` | (required for serve) | API key for HTTP API authentication |
 | `API_PORT` | `80` | HTTP API server port |
+| `API_HOST_PORT` | `8080` | Host port the API/web UI is published on (docker compose only) |
+| `MGMT_ADDR` | `localhost:7505` | OpenVPN management interface, used for online status and kick |
+| `VPN_SUBNET` | `11.11.0.0/24` | VPN subnet, used by the web UI to suggest free IPs |

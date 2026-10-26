@@ -6,6 +6,7 @@ type AuthOperations interface {
 	FindByUsername(username string) (*User, error)
 	FindByIP(ip string) (*User, error)
 	DeleteUser(username string) (bool, error)
+	UpdateUser(username, password, ip, netmask string) (*User, error)
 	ListUsers() ([]User, error)
 }
 

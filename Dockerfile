@@ -1,3 +1,13 @@
+FROM node:24-alpine AS web
+
+WORKDIR /web
+
+COPY auth-src/web/package.json auth-src/web/package-lock.json ./
+RUN npm ci
+
+COPY auth-src/web/ ./
+RUN npm run build
+
 FROM golang:1.25-alpine AS builder
 
 WORKDIR /build
@@ -6,6 +16,7 @@ COPY auth-src/go.mod auth-src/go.sum* ./
 RUN go mod download
 
 COPY auth-src/ ./
+COPY --from=web /web/dist ./web/dist
 RUN go mod tidy && CGO_ENABLED=0 go build -ldflags="-s -w" -o auth .
 
 FROM alpine:latest

@@ -1,0 +1,5 @@
+.git
+.env
+auth-src/auth
+auth-src/web/node_modules
+auth-src/web/dist

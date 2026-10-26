@@ -7,6 +7,7 @@ services:
       - NET_ADMIN
     ports:
       - "1194:1194"
+      - "${API_HOST_PORT:-8080}:80"
     devices:
       - "/dev/net/tun:/dev/net/tun"
     extra_hosts:
